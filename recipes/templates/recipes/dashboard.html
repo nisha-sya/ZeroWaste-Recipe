@@ -1,0 +1,257 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Recipe App{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Dashboard Header -->
+        <div class="col-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Dashboard</h2>
+                <a href="{% url 'recipes:add_recipe' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Recipe
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Recipes</h6>
+                            <h2 class="mb-0">{{ user_recipes.count }}</h2>
+                        </div>
+                        <i class="fas fa-utensils fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Published Recipes</h6>
+                            <h2 class="mb-0">{{ user_recipes.filter.is_published.count }}</h2>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Favorite Recipes</h6>
+                            <h2 class="mb-0">{{ favorite_recipes.count }}</h2>
+                        </div>
+                        <i class="fas fa-heart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity</h5>
+                    {% if recent_ratings %}
+                    <div class="list-group list-group-flush">
+                        {% for rating in recent_ratings %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ rating.user.userprofile.profile_picture.url|default:'/static/recipes/images/default-profile.png' }}" 
+                                     alt="{{ rating.user.username }}" 
+                                     class="rounded-circle me-3" 
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ rating.user.username }} rated your recipe</h6>
+                                    <p class="mb-1">
+                                        <a href="{% url 'recipes:recipe_detail' rating.recipe.slug %}" class="text-decoration-none">
+                                            {{ rating.recipe.title }}
+                                        </a>
+                                    </p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="text-warning me-2">
+                                            {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= rating.value %}
+                                            <i class="fas fa-star"></i>
+                                            {% else %}
+                                            <i class="far fa-star"></i>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <small class="text-muted">{{ rating.created_at|timesince }} ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                        <h5>No recent activity</h5>
+                        <p class="text-muted">Your recipes haven't received any ratings yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorite Recipes -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Favorite Recipes</h5>
+                    {% if favorite_recipes %}
+                    <div class="list-group list-group-flush">
+                        {% for recipe in favorite_recipes|slice:":5" %}
+                        <a href="{% url 'recipes:recipe_detail' recipe.slug %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ recipe.image.url }}" 
+                                     alt="{{ recipe.title }}" 
+                                     class="rounded me-3" 
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-1">{{ recipe.title }}</h6>
+                                    <small class="text-muted">By {{ recipe.author.username }}</small>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% if favorite_recipes.count > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'recipes:favorites' %}" class="btn btn-outline-primary btn-sm">View All Favorites</a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                        <h5>No favorites yet</h5>
+                        <p class="text-muted">Start adding recipes to your favorites!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- My Recipes -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">My Recipes</h5>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary active">All</button>
+                            <button type="button" class="btn btn-outline-primary">Published</button>
+                            <button type="button" class="btn btn-outline-primary">Drafts</button>
+                        </div>
+                    </div>
+
+                    {% if user_recipes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Recipe</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Views</th>
+                                    <th>Ratings</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for recipe in user_recipes %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ recipe.image.url }}" 
+                                                 alt="{{ recipe.title }}" 
+                                                 class="rounded me-3" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">{{ recipe.title }}</h6>
+                                                <small class="text-muted">{{ recipe.category.name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if recipe.is_published %}
+                                        <span class="badge bg-success">Published</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Draft</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ recipe.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ recipe.views_count }}</td>
+                                    <td>
+                                        {% if recipe.average_rating %}
+                                        <span class="text-warning">
+                                            <i class="fas fa-star"></i> {{ recipe.average_rating|floatformat:1 }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted">No ratings</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'recipes:recipe_detail' recipe.slug %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'recipes:edit_recipe' recipe.slug %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'recipes:delete_recipe' recipe.slug %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                        <h5>No recipes yet</h5>
+                        <p class="text-muted">Start sharing your favorite recipes with the community!</p>
+                        <a href="{% url 'recipes:add_recipe' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Your First Recipe
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filter recipes based on status
+    document.querySelectorAll('.btn-group .btn').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            this.parentElement.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // TODO: Implement filtering logic
+        });
+    });
+</script>
+{% endblock %} 

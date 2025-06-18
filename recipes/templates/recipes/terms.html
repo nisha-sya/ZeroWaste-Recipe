@@ -1,0 +1,78 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - Recipe App{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Terms of Service</h1>
+            <p class="lead">Please read these terms carefully before using our recipe platform.</p>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Acceptance of Terms</h2>
+                    <p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                    
+                    <h3 class="mt-4 mb-3">Use License</h3>
+                    <p>Permission is granted to temporarily download one copy of the materials on Recipe App's website for personal, non-commercial transitory viewing only.</p>
+                    
+                    <h3 class="mt-4 mb-3">User Accounts</h3>
+                    <p>When you create an account with us, you must provide accurate and complete information. You are responsible for:</p>
+                    <ul>
+                        <li>Maintaining the security of your account</li>
+                        <li>All activities that occur under your account</li>
+                        <li>Notifying us immediately of any unauthorized use</li>
+                    </ul>
+                    
+                    <h3 class="mt-4 mb-3">Content Submission</h3>
+                    <p>When you submit recipes or other content:</p>
+                    <ul>
+                        <li>You retain ownership of your content</li>
+                        <li>You grant us a license to use and display your content</li>
+                        <li>You ensure your content is original and doesn't violate any rights</li>
+                        <li>You agree not to submit harmful or inappropriate content</li>
+                    </ul>
+                    
+                    <h3 class="mt-4 mb-3">Prohibited Uses</h3>
+                    <p>You may not use our website to:</p>
+                    <ul>
+                        <li>Violate any applicable laws or regulations</li>
+                        <li>Infringe on intellectual property rights</li>
+                        <li>Harass, abuse, or harm others</li>
+                        <li>Spread malware or harmful code</li>
+                        <li>Attempt to gain unauthorized access to our systems</li>
+                    </ul>
+                    
+                    <h3 class="mt-4 mb-3">Intellectual Property</h3>
+                    <p>The content on this website, including text, graphics, logos, and software, is the property of Recipe App and is protected by copyright laws.</p>
+                    
+                    <h3 class="mt-4 mb-3">Disclaimer</h3>
+                    <p>The materials on Recipe App's website are provided on an 'as is' basis. Recipe App makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+                    
+                    <h3 class="mt-4 mb-3">Limitations</h3>
+                    <p>In no event shall Recipe App or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Recipe App's website.</p>
+                    
+                    <h3 class="mt-4 mb-3">Privacy Policy</h3>
+                    <p>Your privacy is important to us. Please review our <a href="{% url 'recipes:privacy' %}">Privacy Policy</a>, which also governs your use of the website.</p>
+                    
+                    <h3 class="mt-4 mb-3">Modifications</h3>
+                    <p>We reserve the right to modify these terms at any time. We will notify users of any material changes by posting the new terms on this page.</p>
+                    
+                    <h3 class="mt-4 mb-3">Contact Information</h3>
+                    <p>If you have any questions about these Terms of Service, please contact us at:</p>
+                    <div class="contact-info mt-3">
+                        <p><i class="fas fa-envelope me-2"></i><a href="mailto:legal@recipeapp.com">legal@recipeapp.com</a></p>
+                        <p><i class="fas fa-phone me-2"></i><a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <p class="mb-0"><strong>Last updated:</strong> June 17, 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

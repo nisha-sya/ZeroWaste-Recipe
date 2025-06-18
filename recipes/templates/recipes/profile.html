@@ -1,0 +1,162 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}{{ user.username }}'s Profile - Recipe App{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ user.userprofile.profile_picture.url|default:'/static/recipes/images/default-profile.png' }}" 
+                         alt="{{ user.username }}" 
+                         class="rounded-circle mb-3" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    <h3 class="card-title">{{ user.username }}</h3>
+                    {% if user.userprofile.bio %}
+                    <p class="card-text text-muted">{{ user.userprofile.bio }}</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-center gap-3 mb-3">
+                        {% if user.userprofile.website %}
+                        <a href="{{ user.userprofile.website }}" target="_blank" class="text-decoration-none">
+                            <i class="fas fa-globe"></i> Website
+                        </a>
+                        {% endif %}
+                        {% if user.userprofile.location %}
+                        <span class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ user.userprofile.location }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'recipes:dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Stats -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Profile Stats</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Recipes</span>
+                            <span class="badge bg-primary rounded-pill">{{ user_recipes.count }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Favorites</span>
+                            <span class="badge bg-warning rounded-pill">{{ user.favorite_recipes.count }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Member Since</span>
+                            <span class="text-muted">{{ user.date_joined|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User's Recipes -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">My Recipes</h4>
+                        <a href="{% url 'recipes:add_recipe' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Recipe
+                        </a>
+                    </div>
+
+                    {% if user_recipes %}
+                    <div class="row g-4">
+                        {% for recipe in user_recipes %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recipe.title }}</h5>
+                                    <p class="card-text text-muted">{{ recipe.description|truncatewords:20 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a href="{% url 'recipes:recipe_detail' recipe.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+                                            <a href="{% url 'recipes:edit_recipe' recipe.slug %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> {{ recipe.cooking_time }} mins
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <small class="text-muted">
+                                        Created on {{ recipe.created_at|date:"M d, Y" }}
+                                        {% if recipe.is_published %}
+                                        <span class="badge bg-success ms-2">Published</span>
+                                        {% else %}
+                                        <span class="badge bg-warning ms-2">Draft</span>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                        <h5>No recipes yet</h5>
+                        <p class="text-muted">Start sharing your favorite recipes with the community!</p>
+                        <a href="{% url 'recipes:add_recipe' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Your First Recipe
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                        {{ form.bio }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.profile_picture.id_for_label }}" class="form-label">Profile Picture</label>
+                        {{ form.profile_picture }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.website.id_for_label }}" class="form-label">Website</label>
+                        {{ form.website }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+                        {{ form.location }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,113 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}Welcome to ZeroWaste Recipes{% endblock %}
+
+{% block body_class %}splash-page-body{% endblock %}
+
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body.splash-page-body {
+        background-color: white;
+        overflow: hidden; /* Hide scrollbars */
+    }
+    .splash-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        position: relative;
+        padding: 20px;
+        text-align: center;
+    }
+    .splash-brush-stroke {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url("{% static 'recipes/images/green-brush-stroke.png' %}"); /* A green brush stroke image */
+        background-size: cover;
+        background-position: center;
+        opacity: 0.8; /* Adjust as needed */
+        z-index: -1;
+    }
+    .splash-content {
+        z-index: 1;
+    }
+    .splash-welcome-text {
+        font-family: 'Dancing Script', cursive; /* Example for a fancy font */
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: rgb(74, 39, 39); /* Dark brown from project CSS */
+        margin-bottom: 0;
+    }
+    .splash-app-name {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: rgb(74, 39, 39); /* Dark brown from project CSS */
+        margin-bottom: 20px;
+    }
+    .splash-image {
+        max-width: 250px;
+        height: auto;
+        margin-bottom: 30px;
+    }
+    .splash-tagline {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 15px;
+    }
+    .splash-action-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: rgb(74, 39, 39); /* Dark brown */
+        margin-bottom: 30px;
+    }
+    .splash-button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+        background-color: #28a745; /* Green from project CSS */
+        border-radius: 50%;
+        color: white;
+        font-size: 2rem;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+    .splash-button-container:hover {
+        background-color: #218838; /* Darker green on hover */
+        color: white; /* Keep icon white on hover */
+    }
+    .splash-button-container i {
+        transform: rotate(0deg); /* Initial state */
+        transition: transform 0.3s ease;
+    }
+    .splash-button-container:hover i {
+        transform: rotate(45deg); /* Rotate icon on hover */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="splash-container">
+    <div class="splash-brush-stroke"></div>
+    <div class="splash-content">
+        <p class="splash-welcome-text">Welcome to</p>
+        <h1 class="splash-app-name">ZeroWaste Recipes</h1>
+        
+        <img src="{% static 'recipes/images/splash-food-illustration.png' %}" alt="Food Illustration" class="splash-image">
+
+        <p class="splash-tagline">Unlock your culinary journey</p>
+        <p class="splash-action-text">Sign in now!</p>
+
+        <a href="{% url 'login' %}" class="splash-button-container">
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+{% endblock %} 

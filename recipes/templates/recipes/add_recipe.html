@@ -1,0 +1,232 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}{% if recipe %}Edit Recipe{% else %}Add Recipe{% endif %} - Recipe App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ingredient-form, .step-form {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    .remove-form {
+        color: #dc3545;
+        cursor: pointer;
+    }
+    .remove-form:hover {
+        color: #bd2130;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">
+                        {% if recipe %}Edit Recipe{% else %}Add New Recipe{% endif %}
+                    </h2>
+
+                    <form method="post" enctype="multipart/form-data" id="recipe-form">
+                        {% csrf_token %}
+
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <h4>Basic Information</h4>
+                            {{ form.non_field_errors }}
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                                        {{ form.title }}
+                                        {{ form.title.errors }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                        {{ form.category }}
+                                        {{ form.category.errors }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.cooking_time.id_for_label }}" class="form-label">Cooking Time (minutes)</label>
+                                        {{ form.cooking_time }}
+                                        {{ form.cooking_time.errors }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.servings.id_for_label }}" class="form-label">Servings</label>
+                                        {{ form.servings }}
+                                        {{ form.servings.errors }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                                {{ form.description.errors }}
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="{{ form.image.id_for_label }}" class="form-label">Recipe Image</label>
+                                {{ form.image }}
+                                {{ form.image.errors }}
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4>Ingredients</h4>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-ingredient">
+                                    <i class="fas fa-plus"></i> Add Ingredient
+                                </button>
+                            </div>
+                            <div id="ingredients-container">
+                                {{ ingredient_formset.management_form }}
+                                {% for form in ingredient_formset %}
+                                    <div class="ingredient-form">
+                                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-3">
+                                                {{ form.quantity.label_tag }}
+                                                {{ form.quantity }}
+                                                {{ form.quantity.errors }}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{ form.unit.label_tag }}
+                                                {{ form.unit }}
+                                                {{ form.unit.errors }}
+                                            </div>
+                                            <div class="col-md-5">
+                                                {{ form.name.label_tag }}
+                                                {{ form.name }}
+                                                {{ form.name.errors }}
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span class="remove-form" onclick="removeForm(this, 'ingredients')"><i class="fas fa-times"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Steps -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4>Instructions</h4>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-step">
+                                    <i class="fas fa-plus"></i> Add Step
+                                </button>
+                            </div>
+                            <div id="steps-container">
+                                {{ step_formset.management_form }}
+                                {% for form in step_formset %}
+                                    <div class="step-form">
+                                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-2">
+                                                {{ form.order.label_tag }}
+                                                {{ form.order }}
+                                                {{ form.order.errors }}
+                                            </div>
+                                            <div class="col-md-8">
+                                                {{ form.description.label_tag }}
+                                                {{ form.description }}
+                                                {{ form.description.errors }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ form.image.label_tag }}
+                                                {{ form.image }}
+                                                {{ form.image.errors }}
+                                                <span class="remove-form" onclick="removeForm(this, 'steps')"><i class="fas fa-times"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Additional Options -->
+                        <div class="mb-4">
+                            <h4>Additional Options</h4>
+                            <div class="form-check mb-2">
+                                {{ form.is_featured }}
+                                <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                    Feature this recipe on the homepage
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.is_published }}
+                                <label class="form-check-label" for="{{ form.is_published.id_for_label }}">
+                                    Publish this recipe
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                {% if recipe %}Update Recipe{% else %}Create Recipe{% endif %}
+                            </button>
+                            <a href="{% url 'recipes:recipe_list' %}" class="btn btn-outline-secondary btn-lg ms-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Helper to update TOTAL_FORMS
+    function updateTotalForms(prefix) {
+        const forms = document.querySelectorAll(`#${prefix}-container .${prefix.slice(0, -1)}-form`);
+        document.querySelector(`#id_${prefix}-TOTAL_FORMS`).value = forms.length;
+    }
+
+    // Remove form
+    function removeForm(el, prefix) {
+        el.closest(`.${prefix.slice(0, -1)}-form`).remove();
+        updateTotalForms(prefix);
+    }
+
+    // Add ingredient form
+    document.getElementById('add-ingredient').addEventListener('click', function() {
+        const container = document.getElementById('ingredients-container');
+        const totalForms = document.getElementById('id_ingredients-TOTAL_FORMS');
+        const formIdx = parseInt(totalForms.value);
+        const emptyForm = `{{ ingredient_formset.empty_form.as_p|escapejs }}`;
+        const newFormHtml = emptyForm.replace(/__prefix__/g, formIdx);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ingredient-form';
+        wrapper.innerHTML = newFormHtml + '<span class="remove-form" onclick="removeForm(this, \'ingredients\')"><i class="fas fa-times"></i></span>';
+        container.appendChild(wrapper);
+        totalForms.value = formIdx + 1;
+    });
+
+    // Add step form
+    document.getElementById('add-step').addEventListener('click', function() {
+        const container = document.getElementById('steps-container');
+        const totalForms = document.getElementById('id_steps-TOTAL_FORMS');
+        const formIdx = parseInt(totalForms.value);
+        const emptyForm = `{{ step_formset.empty_form.as_p|escapejs }}`;
+        const newFormHtml = emptyForm.replace(/__prefix__/g, formIdx);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'step-form';
+        wrapper.innerHTML = newFormHtml + '<span class="remove-form" onclick="removeForm(this, \'steps\')"><i class="fas fa-times"></i></span>';
+        container.appendChild(wrapper);
+        totalForms.value = formIdx + 1;
+    });
+</script>
+{% endblock %} 

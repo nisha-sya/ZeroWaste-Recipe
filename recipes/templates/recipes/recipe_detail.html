@@ -1,0 +1,311 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+{% load recipe_filters %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block body_class %}bg-light-green no-main-padding{% endblock %}
+
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body.bg-light-green {
+        background-color: #e6ffe6; /* Light green background */
+    }
+    body.no-main-padding main.container {
+        padding: 0 !important;
+    }
+    .recipe-detail-header {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .recipe-detail-header .back-arrow {
+        font-size: 1.5rem;
+        color: #333;
+        margin-right: 15px;
+    }
+    .recipe-detail-header h2 {
+        flex-grow: 1;
+        text-align: center;
+        margin: 0;
+        font-size: 1.8rem;
+        color: #333;
+    }
+    .recipe-detail-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 20px auto;
+        overflow: hidden;
+    }
+    .recipe-image-top {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+    .recipe-info-section {
+        padding: 20px;
+    }
+    .recipe-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .recipe-description {
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    /* Ingredients and Instructions */
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .ingredient-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        color: #444;
+    }
+    .ingredient-item input[type="checkbox"] {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        accent-color: #32CD32;
+    }
+    .instruction-item {
+        font-size: 1.1rem;
+        color: #444;
+        margin-bottom: 15px;
+    }
+    .instruction-item strong {
+        color: #32CD32; /* LimeGreen */
+    }
+
+    /* Ratings and Reviews */
+    .rating-summary .star-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .rating-summary .star-row span {
+        font-size: 1rem;
+        color: #333;
+        width: 20px;
+    }
+    .rating-summary .progress {
+        height: 8px;
+        flex-grow: 1;
+        margin: 0 10px;
+        background-color: #e9ecef;
+    }
+    .rating-summary .progress-bar {
+        background-color: #32CD32; /* LimeGreen */
+    }
+    .rating-summary .percentage {
+        font-size: 0.9rem;
+        color: #555;
+    }
+    .review-item {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    .review-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .reviewer-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    .reviewer-name {
+        font-weight: bold;
+        color: #333;
+    }
+    .review-date {
+        font-size: 0.85rem;
+        color: #777;
+    }
+    .review-text {
+        font-size: 0.95rem;
+        color: #444;
+        margin-bottom: 10px;
+    }
+    .review-actions span {
+        margin-right: 15px;
+        color: #777;
+        font-size: 0.9rem;
+    }
+    .review-actions i {
+        margin-right: 5px;
+    }
+    .rating-stars i {
+        color: #FFC107; /* Gold color for stars */
+    }
+    .btn-rate-recipe {
+        background-color: #32CD32; /* LimeGreen */
+        border-color: #32CD32;
+        color: white;
+        font-size: 1.1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .btn-rate-recipe:hover {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recipe-detail-header">
+    <a href="{% url 'recipes:recipe_list' %}" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+    <h2>ZeroWaste Chef</h2>
+</div>
+
+<div class="recipe-detail-container">
+    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image-top">
+    <div class="recipe-info-section">
+        <h1 class="recipe-title">{{ recipe.title }}</h1>
+        <p class="recipe-description">{{ recipe.description }}</p>
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'recipes:favorite_recipe' recipe.slug %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if is_favorited %}btn-danger{% else %}btn-outline-primary{% endif %} mb-3">
+                {% if is_favorited %}<i class="fas fa-heart"></i> Unfavorite{% else %}<i class="far fa-heart"></i> Favorite{% endif %}
+            </button>
+        </form>
+        {% endif %}
+
+        <!-- Ingredients -->
+        <h3 class="section-title mt-4">Ingredients</h3>
+        <ul class="list-unstyled">
+            {% for ingredient in recipe.ingredients.all %}
+            <li class="ingredient-item">
+                <input type="checkbox" id="ingredient-{{ forloop.counter }}">
+                <label for="ingredient-{{ forloop.counter }}">{{ ingredient.quantity }} {{ ingredient.unit }} {{ ingredient.name }}</label>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Instructions -->
+        <h3 class="section-title mt-4">Instructions</h3>
+        <ol class="list-unstyled">
+            {% for step in recipe.steps.all %}
+            <li class="instruction-item">
+                <strong>Step {{ forloop.counter }}</strong><br>
+                {{ step.description }}
+            </li>
+            {% endfor %}
+        </ol>
+
+        <!-- Reviews Section -->
+        <h3 class="section-title mt-4">Reviews</h3>
+        <div class="row mb-3 align-items-center">
+            <div class="col-4 text-center">
+                <h4 class="display-4 mb-0">{{ recipe.average_rating|floatformat:1 }}</h4>
+                <p class="text-muted">{{ recipe.total_ratings }} reviews</p>
+            </div>
+            <div class="col-8">
+                {% for i in "54321"|make_list %}
+                <div class="star-row">
+                    <span>{{ i }}</span><i class="fas fa-star text-warning me-1"></i>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ recipe.ratings|get_rating_percentage:i }}%;"></div>
+                    </div>
+                    <span class="percentage">{{ recipe.ratings|get_rating_percentage:i }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="reviews-list mt-4">
+            {% for rating in recipe.ratings.all %}
+            <div class="review-item">
+                <div class="reviewer-info">
+                    <img src="{{ rating.user.userprofile.profile_picture.url|default:'/static/recipes/images/default-profile.png' }}" alt="{{ rating.user.username }}">
+                    <div>
+                        <div class="reviewer-name">{{ rating.user.username }}</div>
+                        <div class="review-date">{{ rating.created_at|timesince }} ago</div>
+                    </div>
+                    <div class="ms-auto rating-stars">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= rating.value %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="review-text">{{ rating.comment }}</p>
+                <div class="review-actions">
+                    <span><i class="far fa-thumbs-up"></i> {{ rating.likes }}</span>
+                    <span><i class="far fa-comment"></i> {{ rating.comments_count }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No reviews yet. Be the first to review this recipe!</p>
+            {% endfor %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <button class="btn btn-rate-recipe mt-4">Rate Recipe</button>
+        {% else %}
+        <div class="text-center mt-4">
+            <p class="text-muted">Please <a href="{% url 'login' %}" class="footer-link">login</a> to rate this recipe.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Placeholder for Rate Recipe Modal/Form if implemented -->
+
+</div>
+
+<!-- Floating Action Button for Rate Recipe (example - you might move this) -->
+{# <button class="btn btn-primary rounded-circle" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; font-size: 1.5rem;"><i class="fas fa-star"></i></button> #}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // This will require a custom Django template filter for get_rating_percentage
+    // You'll need to define this in a templatetags file, e.g., recipes/templatetags/recipe_filters.py
+    // Example: 
+    // from django import template
+    // register = template.Library()
+    // @register.filter
+    // def get_rating_percentage(ratings, value):
+    //     total_ratings = len(ratings)
+    //     if total_ratings == 0: return 0
+    //     count = sum(1 for r in ratings if r.value == int(value))
+    //     return (count / total_ratings) * 100
+
+    // For now, this assumes the filter is available or you handle percentages in the view
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}Sign In - Recipe App{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color:rgb(74, 39, 39);
+        --secondary-color: #4ecdc4;
+        --dark-color: #2d3436;
+        --light-color: #f9f9f9;
+    }
+    body {
+        background-color: var(--light-color);
+    }
+    .login-new-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .login-new-header-illustration {
+        width: 100%;
+        height: 150px;
+        background-color: #f8f9fa;
+        border-radius: 10px 10px 0 0;
+        margin-bottom: 20px;
+    }
+    .login-new-welcome-text {
+        font-size: 24px;
+        color: rgb(74, 39, 39);
+        margin-bottom: 10px;
+    }
+    .login-new-subtext {
+        color: #6d757d;
+        margin-bottom: 30px;
+    }
+    .login-new-form-group {
+        margin-bottom: 20px;
+    }
+    .login-new-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+    }
+    .login-new-form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .login-new-form-group input:focus {
+        border-color: rgb(74, 39, 39);
+        box-shadow: 0 0 0 0.2rem rgba(74, 39, 39, 0.25);
+    }
+    .login-new-terms-checkbox {
+        margin-bottom: 20px;
+    }
+    .login-new-terms-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+        accent-color: rgb(74, 39, 39);
+    }
+    .login-new-submit-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        height: 70px;
+        background-color: rgb(74, 39, 39);
+        border-radius: 50%;
+        color: white;
+        font-size: 1.8rem;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    .login-new-submit-button:hover {
+        background-color: rgb(60, 30, 30);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<body class="login-new-page-body">
+    <div class="login-new-container">
+        <div class="login-new-header-illustration"></div>
+        <h2 class="login-new-welcome-text">Welcome!</h2>
+        <p class="login-new-subtext">Sign in to Continue</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="login-new-form-group">
+                <label for="id_username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="id_username" name="username" required>
+            </div>
+            <div class="login-new-form-group">
+                <label for="id_password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="id_password" required>
+            </div>
+
+            <div class="login-new-terms-checkbox">
+                <input type="checkbox" id="terms_conditions" name="terms_conditions" required>
+                <label for="terms_conditions">I agree with Terms & Conditions!</label>
+            </div>
+
+            <div class="login-new-submit-button-container">
+                <button type="submit" class="login-new-submit-button">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{% url 'register' %}">Create Account</a></p>
+            <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+        </div>
+    </div>
+</body>
+{% endblock %}

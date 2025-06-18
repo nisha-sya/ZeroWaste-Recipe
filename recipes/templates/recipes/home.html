@@ -1,0 +1,497 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block title %}Home - Natural Foods{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .home-hero-section {
+        background-image: url("{% static 'recipes/images/home-hero.jpg' %}"); /* Placeholder image */
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 100px 0;
+        min-height: 400px; /* Adjust height as needed */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 50px; /* Space before products */
+        position: relative;
+        z-index: 1;
+    }
+    .home-hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.4); /* Dark overlay */
+        z-index: -1;
+    }
+    .home-hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero-content {
+        z-index: 1;
+    }
+
+    /* Section Titles */
+    .section-title-custom {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #333;
+        position: relative;
+    }
+    .section-title-custom::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 3px;
+        background-color: #28a745;
+        margin: 15px auto 0;
+    }
+
+    /* How It Works Section */
+    .how-it-works .icon-box {
+        text-align: center;
+        padding: 20px;
+        transition: transform 0.3s ease;
+    }
+    .how-it-works .icon-box i {
+        font-size: 3rem;
+        color: #28a745;
+        margin-bottom: 15px;
+    }
+    .how-it-works .icon-box h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    /* Browse by Category Section */
+    .category-card {
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+    }
+    .category-card img {
+        height: 150px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .category-card .card-body {
+        padding: 15px;
+        text-align: center;
+    }
+    .category-card .card-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Latest Recipes Section */
+    .latest-recipe-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    .latest-recipe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .latest-recipe-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+    .latest-recipe-card .card-body {
+        padding: 15px;
+    }
+    .latest-recipe-card .card-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .latest-recipe-card .recipe-meta {
+        font-size: 0.9rem;
+        color: #777;
+    }
+    .latest-recipe-card .recipe-meta i {
+        margin-right: 5px;
+    }
+
+    /* Call to Action Section */
+    .cta-section {
+        background-color: #28a745; /* Green background */
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        margin-top: 50px;
+    }
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .cta-section p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+    .cta-section .btn-light {
+        font-size: 1.1rem;
+        padding: 12px 30px;
+        border-radius: 30px;
+    }
+
+    /* Overriding default main container padding */
+    main.container {
+        padding-top: 0 !important;
+    }
+
+    /* Product Cards (Recipe Cards) */
+    .product-section h2 {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #333;
+        position: relative;
+    }
+    .product-section h2::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 3px;
+        background-color: #28a745;
+        margin: 15px auto 0;
+    }
+    .product-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .product-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+    .product-card .card-body {
+        padding: 15px;
+        flex-grow: 1;
+    }
+    .product-card .card-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        height: 2.5em; /* Limit title height */
+        overflow: hidden;
+    }
+    .product-card .product-price {
+        font-size: 1.2rem;
+        color: #28a745; /* Green color for price/rating */
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .product-card .badge-sale {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+    .product-card .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+    .product-card .btn-outline-success:hover {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    /* Footer styles for home.html */
+    .home-footer {
+        background-color: #343a40; /* Darker background */
+        color: #f8f9fa;
+        padding: 4rem 0;
+        margin-top: 5rem;
+        font-size: 0.95rem;
+    }
+    .home-footer h5 {
+        color: #28a745; /* Green for headings */
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+    }
+    .home-footer p {
+        color: #adb5bd;
+        line-height: 1.6;
+    }
+    .home-footer .list-unstyled li a {
+        color: #adb5bd;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        padding: 0.2rem 0;
+        display: block;
+    }
+    .home-footer .list-unstyled li a:hover {
+        color: #28a745;
+    }
+    .home-footer .social-links a {
+        color: #adb5bd;
+        font-size: 1.5rem;
+        margin-right: 15px;
+        transition: color 0.3s ease;
+    }
+    .home-footer .social-links a:hover {
+        color: #28a745;
+    }
+    .home-footer .newsletter-form .form-control {
+        background-color: #495057;
+        border: 1px solid #6c757d;
+        color: white;
+    }
+    .home-footer .newsletter-form .form-control::placeholder {
+        color: #adb5bd;
+    }
+    .home-footer .newsletter-form .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+    .home-footer .newsletter-form .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    .home-footer .copyright {
+        border-top: 1px solid #495057;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: #adb5bd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="home-hero-section">
+    <div class="container hero-content">
+        <h1>Cook More, Waste Less: Your Recipe Hub</h1>
+        <p class="lead mt-3">Discover delicious recipes, share your culinary creations, and join a community dedicated to sustainable cooking.</p>
+        <div class="mt-4">
+            <a href="{% url 'recipes:recipe_list' %}" class="btn btn-light btn-lg me-3">Explore Recipes</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'recipes:add_recipe' %}" class="btn btn-outline-light btn-lg">Share Your Recipe</a>
+            {% else %}
+            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">Join Us Now</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works py-5">
+    <div class="container">
+        <h2 class="section-title-custom">How It Works</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="icon-box">
+                    <i class="fas fa-search"></i>
+                    <h4>Discover Recipes</h4>
+                    <p>Find thousands of recipes from various cuisines and dietary preferences.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="icon-box">
+                    <i class="fas fa-share-alt"></i>
+                    <h4>Share Your Creations</h4>
+                    <p>Upload your own recipes and inspire others with your culinary skills.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="icon-box">
+                    <i class="fas fa-users"></i>
+                    <h4>Connect & Learn</h4>
+                    <p>Interact with other food enthusiasts, leave reviews, and get cooking tips.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Recipes Section -->
+<section class="product-section py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title-custom">POPULAR RECIPES</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for recipe in popular_recipes %}
+            <div class="col">
+                <div class="product-card position-relative">
+                    {% if recipe.is_new %}<span class="badge-sale">NEW</span>{% endif %}
+                    <img src="{{ recipe.image.url }}" class="img-fluid" alt="{{ recipe.title }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        <p class="product-price">
+                            {% if recipe.average_rating %}
+                                <i class="fas fa-star"></i> {{ recipe.average_rating|floatformat:1 }}
+                            {% else %}
+                                No ratings yet
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'recipes:recipe_detail' recipe.slug %}" class="btn btn-outline-success mt-2">View Recipe</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No popular recipes available yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Browse by Category Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title-custom">Browse by Category</h2>
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for category in categories %}
+            <div class="col">
+                <a href="{% url 'recipes:category_recipes' category.slug %}" class="text-decoration-none">
+                    <div class="card category-card">
+                        {% if category.image %}
+                            <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                        {% else %}
+                            <img src="{% static 'recipes/images/default-category.jpg' %}" class="card-img-top" alt="Default Category">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <small class="text-muted">{{ category.recipes.count }} recipe{{ category.recipes.count|pluralize }}</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No categories available yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Latest Recipes Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title-custom">Latest Recipes</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recipe in latest_recipes %}
+            <div class="col">
+                <div class="latest-recipe-card">
+                    <img src="{{ recipe.image.url }}" class="img-fluid" alt="{{ recipe.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        <p class="card-text recipe-meta">
+                            <i class="fas fa-clock"></i> {{ recipe.cooking_time }} mins | 
+                            <i class="fas fa-star"></i> {{ recipe.average_rating|floatformat:1|default:"N/A" }}
+                        </p>
+                        <a href="{% url 'recipes:recipe_detail' recipe.slug %}" class="btn btn-sm btn-outline-success mt-2">View Recipe</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No latest recipes available yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Cook Something Amazing?</h2>
+        <p>Join our community today and start sharing your favorite recipes or find your next culinary adventure!</p>
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg">Get Started - It's Free!</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+<footer class="home-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="text-white mb-3">ZEROWASTE RECIPES</h5>
+                <p>Your go-to platform for sustainable cooking. Discover delicious recipes, minimize food waste, and connect with a community of eco-conscious food lovers.</p>
+                <div class="social-links mt-3">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4 mb-md-0">
+                <h5 class="mb-3">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'recipes:recipe_list' %}">Recipes</a></li>
+                    <li><a href="{% url 'recipes:dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'recipes:profile' %}">Profile</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4 mb-md-0">
+                <h5 class="mb-3">Legal & Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'recipes:terms' %}">Terms of Service</a></li>
+                    <li><a href="{% url 'recipes:privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'recipes:contact' %}">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 class="mb-3">Newsletter</h5>
+                <p>Stay updated with our latest recipes and tips!</p>
+                <form class="newsletter-form">
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email address" aria-label="Your email address">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="text-center copyright">
+            <p class="mb-0">&copy; {% now "Y" %} ZEROWASTE RECIPES. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %} 
